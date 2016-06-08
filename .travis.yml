@@ -1,0 +1,11 @@
+language: php
+ 
+php:
+  - 7 
+  - hhvm
+ 
+before_script:
+  - composer self-update
+  - composer install --prefer-source
+ 
+script: phpunit
