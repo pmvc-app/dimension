@@ -20,7 +20,7 @@ class dimension extends \PMVC\Action
     function index($m, $f)
     {
         $this->_dot = \PMVC\plug('dotenv');
-        $this->_underscore = \PMVC\plug('underscore')->underscore();
+        $this->_underscore = \PMVC\plug('underscore');
         $configs = $this->_dot->getUnderscoreToArray('.env.dimension');
         $this->_folder = \PMVC\lastSlash($configs['FOLDER']);
         $allConfigs = $this->getConfigs('.dimension.base');
@@ -40,18 +40,55 @@ class dimension extends \PMVC\Action
 
     function processInput($f, $dimension)
     {
-        $input = \PMVC\value($f, [$dimension]);
-        if (!$input) {
+        $keys = explode('_',$dimension);
+        $inputs = [];
+        foreach ($keys as $key) {
+            $inputs[]=\PMVC\value($f, [$key]); 
+        }
+        $all_input = $this->flatten($inputs);
+        if (empty($all_input)) {
             return [];
         }
-        if (is_array($input) && count($input)>1) {
-            return $this->getMultiInputConfigs($input, $dimension);
+        if (count($all_input)>1) {
+            return $this->getMultiInputConfigs($all_input, $dimension);
         } else {
-            if (is_array($input)) {
-                $input = reset($input);
-            }
-            return $this->getOneInputConfigs($input, $dimension);
+            $all_input = reset($all_input);
+            return $this->getOneInputConfigs($all_input, $dimension);
         }
+    }
+
+    function flatten($array, $prefix='')
+    {
+        $lines = [];
+        foreach($array as $v) {
+            if (empty($v)) {
+                continue;
+            }
+            $new = [];
+            if (is_array($v)) {
+                if (empty($lines)) {
+                    foreach ($v as $v1) {
+                        $new[$v1] = null;
+                    }
+                } else {
+                    foreach ($lines as $lk=>$lv) {
+                        foreach ($v as $v1) {
+                            $new[$lk.'_'.$v1] = null;
+                        }
+                    }
+                }
+            } else {
+                if (empty($lines)) {
+                    $new[$v] = null;
+                } else {
+                    foreach ($lines as $lk=>$lv) {
+                        $new[$lk.'_'.$v] = null;
+                    }
+                }
+            }
+            $lines = $new;
+        }
+        return array_keys($lines);
     }
 
     function getMultiInputConfigs($inputs, $dimension)
@@ -63,7 +100,11 @@ class dimension extends \PMVC\Action
             $file = $this->getOneInputFile($input, $dimension);
             $arr  = $this->getConfigs($file);
 
-            $keys = array_keys($arr);
+            /*<!-- Verify Conflict*/
+            $keys = $this->_underscore
+                ->array()
+                ->toUnderscore($arr);
+            $keys = array_keys($keys);
             foreach($keys as $key)
             {
                 if (!isset($allKeys[$key])) {
@@ -74,9 +115,11 @@ class dimension extends \PMVC\Action
                     );
                 }
             }
+            /*-->*/
+
             $allConfigs = array_replace_recursive(   
                 $allConfigs,   
-                $this->_underscore->toArray($arr)
+                $arr
             );
         }
         return $allConfigs;
@@ -90,20 +133,29 @@ class dimension extends \PMVC\Action
     function getOneInputConfigs($input, $dimension)
     {
         $file = $this->getOneInputFile($input, $dimension);
-        $configs = $this->getConfigs($file);
-        return $this->_underscore->toArray($configs); 
+        return $this->getConfigs($file);
     }
 
     function getConfigs($file)
     {
         $path = $this->_folder.$file;
-        $allFile = glob($path.'*');
+        $allFile = glob($path.'.*');
+        if (\PMVC\realPath($path)) {
+            $allFile[]=$path;
+        }
         $allKeys = [];
         $allConfigs = [];
         foreach($allFile as $file)
         {
             $arr = $this->_dot->getArray($file);
-            $keys = array_keys($arr);
+            $arr = $this->_underscore
+                ->underscore()
+                ->toArray($arr);
+
+            $keys = $this->_underscore
+                ->array()
+                ->toUnderscore($arr);
+            $keys = array_keys($keys);
             foreach($keys as $key)
             {
                 if (!isset($allKeys[$key])) {
