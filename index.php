@@ -16,13 +16,18 @@ class dimension extends \PMVC\Action
     private $_dot;
     private $_folder;
     private $_underscore;
+    private $_escape;
 
     function index($m, $f)
     {
         $this->_dot = \PMVC\plug('dotenv');
         $this->_underscore = \PMVC\plug('underscore');
         $configs = $this->_dot->getUnderscoreToArray('.env.dimension');
-        $this->_folder = \PMVC\lastSlash($configs['FOLDER']);
+        $this->_folder = \PMVC\lastSlash(\PMVC\value($configs,['FOLDER']));
+        if (!\PMVC\realpath($this->_folder)) {
+            return !trigger_error('Dimensions settings folder not exists. ['.$this->_folder.']');
+        }
+        $this->_escape = \PMVC\value($configs,['ESCAPE']);
         $allConfigs = $this->getConfigs('.dimension.base');
 
         foreach($configs['DIMENSIONS'] as $dimension)
@@ -150,7 +155,7 @@ class dimension extends \PMVC\Action
             $arr = $this->_dot->getArray($file);
             $arr = $this->_underscore
                 ->underscore()
-                ->toArray($arr);
+                ->toArray($arr, $this->_escape);
 
             $keys = $this->_underscore
                 ->array()
@@ -173,5 +178,4 @@ class dimension extends \PMVC\Action
         }
         return $allConfigs;
     }
-
 }
