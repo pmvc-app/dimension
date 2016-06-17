@@ -121,8 +121,7 @@ class dimension extends \PMVC\Action
         $allConfigs = [];
         foreach($inputs as $input)
         {
-            $file = $this->getOneInputFile($input, $dimension);
-            $arr  = $this->getConfigs($file);
+            $arr = $this->getOneInputConfigs($input, $dimension);
 
             /*<!-- Verify Conflict*/
             $keys = $this->_underscore
@@ -164,7 +163,16 @@ class dimension extends \PMVC\Action
     function getOneInputConfigs($input, $dimension)
     {
         $file = $this->getOneInputFile($input, $dimension);
-        return $this->getConfigs($file);
+        $configs =  $this->getConfigs($file);
+        if (!empty($configs['base'])) {
+            $baseFile = $this->getOneInputFile($configs['base'], $dimension);
+            $baseConfigs =  $this->getConfigs($baseFile);
+            $configs = array_replace_recursive(   
+                $baseConfigs,   
+                $configs
+            );
+        }
+        return $configs;
     }
 
     function getOneInputFile($input, $dimension)
