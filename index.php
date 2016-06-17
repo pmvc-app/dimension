@@ -32,18 +32,36 @@ class dimension extends \PMVC\Action
 
         foreach($configs['DIMENSIONS'] as $dimension)
         {
-            $dimensionConfigs = $this->processInput($f, $dimension);
+            $dimensionConfigs = $this->processInputForOneDimension($f, $dimension);
             $allConfigs = array_replace_recursive(
                 $allConfigs, 
                 $dimensionConfigs
             );
+        }
+        if (isset($allConfigs['_'])) {
+            $this->processConstantArray($allConfigs);
         }
         $go = $m['dump'];
         $go->set($allConfigs);
         return $go;
     }
 
-    function processInput($f, $dimension)
+    function processConstantArray(&$arr)
+    {
+        $_ = \PMVC\plug('underscore')
+            ->array()
+            ->toUnderscore($arr['_']);
+        unset($arr['_']);
+        foreach ($_ as $k=>$v) {
+            $k = substr($k,1);
+            if (defined($k)) {
+                $k = constant($k);
+            }
+            $arr[$k] = $v;
+        }
+    }
+
+    function processInputForOneDimension($f, $dimension)
     {
         $keys = explode('_',$dimension);
         $inputs = [];
@@ -99,6 +117,7 @@ class dimension extends \PMVC\Action
     function getMultiInputConfigs($inputs, $dimension)
     {
         $allKeys = [];
+        $allKeyMap = [];
         $allConfigs = [];
         foreach($inputs as $input)
         {
@@ -110,15 +129,27 @@ class dimension extends \PMVC\Action
                 ->array()
                 ->toUnderscore($arr);
             $keys = array_keys($keys);
+            $found = false;
             foreach($keys as $key)
             {
-                if (!isset($allKeys[$key])) {
-                    $allKeys[$key] = $input;
+                if (isset($allKeyMap[$key])) {
+                    $found = $key;
                 } else {
-                    trigger_error('Conflict for '.$dimension.' key: ['.$key.'].'.
-                        ' Between ['.$allKeys[$key].'] and ['.$input.']'
-                    );
+                    foreach ($allKeys as $aV) {
+                       if (0===strpos($aV,$key) || 0===strpos($key,$aV)) {
+                            $found=$aV;
+                            break;
+                       }
+                    }
+                    if (!$found) {
+                        $allKeys[] = $key;
+                        $allKeyMap[$key] = $input;
+                        continue;
+                    }
                 }
+                trigger_error('Conflict for '.$dimension.' key: ['.$found.'].'.
+                    ' Between ['.$allKeyMap[$found].'] and ['.$input.']'
+                );
             }
             /*-->*/
 
@@ -130,15 +161,15 @@ class dimension extends \PMVC\Action
         return $allConfigs;
     }
 
-    function getOneInputFile($input, $dimension)
-    {
-        return '.dimension.'.$dimension.'.'.$input;
-    }
-
     function getOneInputConfigs($input, $dimension)
     {
         $file = $this->getOneInputFile($input, $dimension);
         return $this->getConfigs($file);
+    }
+
+    function getOneInputFile($input, $dimension)
+    {
+        return '.dimension.'.$dimension.'.'.$input;
     }
 
     function getConfigs($file)
@@ -153,6 +184,13 @@ class dimension extends \PMVC\Action
         foreach($allFile as $file)
         {
             $arr = $this->_dot->getArray($file);
+            if (!is_array($arr)) {
+                trigger_error(
+                    '[\PMVC\App\dimension\getConfigs] '.
+                    'Parse dimension setting fail. ['.$file.']'
+                );
+                return [];
+            }
             $arr = $this->_underscore
                 ->underscore()
                 ->toArray($arr, $this->_escape);
