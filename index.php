@@ -2,16 +2,18 @@
 namespace PMVC\App\dimension;
 
 use PMVC;
+use PMVC\Action;
 
 $b = new \PMVC\MappingBuilder();
+$b->addAction('index');
+$b->addForward('dump',[_TYPE=>'view']);
+
 ${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\dimension';
 ${_INIT_CONFIG}[_INIT_BUILDER] = $b;
 
-$b->addAction('index');
 \PMVC\unplug('view_config_helper');
-$b->addForward('dump',[_TYPE=>'view']);
 
-class dimension extends \PMVC\Action
+class dimension extends Action
 {
     private $_dot;
     private $_folder;
@@ -69,6 +71,7 @@ class dimension extends \PMVC\Action
             $inputs[]=\PMVC\value($f, [$key]); 
         }
         $all_input = $this->flatten($inputs);
+        \PMVC\dev($all_input,'dimension');
         if (empty($all_input)) {
             return [];
         }

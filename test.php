@@ -6,28 +6,57 @@ use PHPUnit_Framework_TestCase;
 
 PMVC\Load::plug();
 PMVC\addPlugInFolders(['../']);
+
+/*Fake View*/
+PMVC\initPlugIn(['controller'=>null]);
 PMVC\l(__DIR__.'/vendor/pmvc-plugin/controller/tests/resources/FakeView.php');
+PMVC\plug(
+    'view',
+    [
+        _CLASS => '\PMVC\FakeView',
+    ]
+);
 
 class DimensionActionTest extends PHPUnit_Framework_TestCase
 {
+    function setup()
+    {
+        \PMVC\unplug('controller');
+        \PMVC\unplug(_RUN_APP);
+    }
+
     function testProcessAction()
     {
-        $view = \PMVC\plug(
-            'view',
-            [
-                _CLASS => '\PMVC\FakeView',
-            ]
-        );
         $pDot = \PMVC\plug('dotenv');
         $pDot[\PMVC\PlugIn\dotenv\ENV_FOLDER] = __DIR__.'/tests/resources';
         $c = \PMVC\plug('controller');
         $c->setApp('dimension');
         $c->plugApp(['./']);
-        $r = $c->getRequest();
         $result = $c->process();
         $actual = \PMVC\value($result,[0,'v']);
         $expected = [
-            'test'=>1234
+            'testKey'=>1234
+        ];
+        $this->assertEquals($expected, $actual);
+    }
+
+    function testDebug()
+    {
+        $c = \PMVC\plug('controller');
+        $c->setApp('dimension');
+        $c->plugApp(['./']);
+        \PMVC\plug('dev');
+        \PMVC\plug('debug',[
+            'level'=>'dimension',
+            'output'=>'debug_store'
+        ]);
+        $r = $c->getRequest();
+        $r['test'] = 'fakeDimension';
+        $result = $c->process();
+        $actual = \PMVC\value($result,[0,'v','debugs','0']);
+        $expected = [
+            'dimension',
+            ['fakeDimension']
         ];
         $this->assertEquals($expected, $actual);
     }
