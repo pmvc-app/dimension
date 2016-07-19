@@ -16,6 +16,7 @@ PMVC\plug(
         _CLASS => '\PMVC\FakeView',
     ]
 );
+PMVC\option('set', 'DIMENSION_FOLDER', './tests/resources');
 
 class DimensionActionTest extends PHPUnit_Framework_TestCase
 {
@@ -56,7 +57,7 @@ class DimensionActionTest extends PHPUnit_Framework_TestCase
         $actual = \PMVC\value($result,[0,'v','debugs','0']);
         $expected = [
             'dimension',
-            ['fakeDimension']
+            ['fakeDimension' => 'test']
         ];
         $this->assertEquals($expected, $actual);
     }
