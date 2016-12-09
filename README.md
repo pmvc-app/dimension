@@ -5,7 +5,21 @@
 [![Total Downloads](https://poser.pugx.org/pmvc-app/dimension/downloads)](https://packagist.org/packages/pmvc-app/dimension) 
 
 # PMVC multi-dimensional configuration library 
-===============
+===
+
+## Config format use .env
+   * https://github.com/pmvc-plugin/dotenv
+   * How to defined array? Ans: use "underscore" plugin
+      * https://github.com/pmvc-plugin/underscore
+
+## How to translate Constant
+   * Prefix with '_', and the key will call constant($k)
+   * https://github.com/pmvc-app/dimension/blob/master/index.php#L55-L68
+
+## How to escape
+   * Prefix with escap character such as '\'.
+   * If detected key start with escap character will bypass underscore process
+      
 
 ## Install with Composer
 ### 1. Download composer
