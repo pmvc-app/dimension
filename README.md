@@ -11,6 +11,7 @@
    * https://github.com/pmvc-plugin/dotenv
    * How to defined array? Ans: use "underscore" plugin
       * https://github.com/pmvc-plugin/underscore
+
 ## How to translate Constant
    * Prefix with '_', and the key will call constant($k)
    * https://github.com/pmvc-app/dimension/blob/master/index.php#L55-L68
