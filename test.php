@@ -10,12 +10,6 @@ PMVC\addPlugInFolders(['../']);
 /*Fake View*/
 PMVC\initPlugIn(['controller'=>null]);
 PMVC\l(__DIR__.'/vendor/pmvc-plugin/controller/tests/resources/FakeView.php');
-PMVC\plug(
-    'view',
-    [
-        _CLASS => '\PMVC\FakeView',
-    ]
-);
 PMVC\option('set', 'DIMENSION_FOLDER', './tests/resources');
 
 class DimensionActionTest extends PHPUnit_Framework_TestCase
@@ -23,7 +17,14 @@ class DimensionActionTest extends PHPUnit_Framework_TestCase
     function setup()
     {
         \PMVC\unplug('controller');
+        \PMVC\unplug('view');
         \PMVC\unplug(_RUN_APP);
+        \PMVC\plug(
+            'view',
+            [
+                _CLASS => '\PMVC\FakeView',
+            ]
+        );
     }
 
     function testProcessAction()
@@ -32,7 +33,7 @@ class DimensionActionTest extends PHPUnit_Framework_TestCase
         $pDot[\PMVC\PlugIn\dotenv\ENV_FOLDER] = __DIR__.'/tests/resources';
         $c = \PMVC\plug('controller');
         $c->setApp('dimension');
-        $c->plugApp(['./']);
+        $c->plugApp(['../']);
         $result = $c->process();
         $actual = \PMVC\value($result,[0,'v']);
         $expected = [
@@ -45,7 +46,7 @@ class DimensionActionTest extends PHPUnit_Framework_TestCase
     {
         $c = \PMVC\plug('controller');
         $c->setApp('dimension');
-        $c->plugApp(['./']);
+        $c->plugApp(['../']);
         \PMVC\plug('dev');
         \PMVC\plug('debug',[
             'level'=>'dimension',

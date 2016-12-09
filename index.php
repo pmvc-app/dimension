@@ -43,7 +43,7 @@ class dimension extends Action
                 $dimensionConfigs
             );
         }
-        \PMVC\dev($this->_inputs, DEBUG_KEY);
+        \PMVC\dev(function(){return $this->_inputs;}, DEBUG_KEY);
         if (isset($allConfigs['_'])) {
             $this->processConstantArray($allConfigs);
         }
