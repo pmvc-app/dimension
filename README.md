@@ -5,7 +5,12 @@
 [![Total Downloads](https://poser.pugx.org/pmvc-app/dimension/downloads)](https://packagist.org/packages/pmvc-app/dimension) 
 
 # PMVC multi-dimensional configuration library 
-===============
+===
+
+## Config format use .env
+   * https://github.com/pmvc-plugin/dotenv
+   * How to defined array, use "underscore" plugin
+      * https://github.com/pmvc-plugin/underscore
 
 ## Install with Composer
 ### 1. Download composer
