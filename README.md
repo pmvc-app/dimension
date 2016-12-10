@@ -41,4 +41,6 @@
 #### 2.2 Or use composer command-line
    * php composer.phar require pmvc-app/dimension
 
-
+## Other Resource
+   * Deployment environment
+      * https://en.wikipedia.org/wiki/Deployment_environment
