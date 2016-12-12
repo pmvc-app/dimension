@@ -19,7 +19,14 @@
 ## How to escape
    * Prefix with escap character such as '\'.
    * If detected key start with escap character will bypass underscore process
-      
+
+## How to extend another config file
+   * add a config base=xxx at start of file
+```
+base=xxx
+```
+   * Important: only could extend same level config
+
 
 ## Install with Composer
 ### 1. Download composer
