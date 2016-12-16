@@ -72,7 +72,7 @@ class dimension extends Action
         $keys = explode('_',$dimension);
         $inputs = [];
         foreach ($keys as $key) {
-            $inputs[]=\PMVC\value($f, [$key]); 
+            $inputs[]=strtolower(\PMVC\value($f, [$key]));
         }
         $all_input = $this->flatten($inputs);
         if (empty($all_input)) {

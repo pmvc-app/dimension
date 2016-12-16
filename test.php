@@ -58,7 +58,7 @@ class DimensionActionTest extends PHPUnit_Framework_TestCase
         $actual = \PMVC\value($result,[0,'v','debugs','0']);
         $expected = [
             'dimension',
-            ['fakeDimension' => 'test']
+            ['fakedimension' => 'test']
         ];
         $this->assertEquals($expected, $actual);
     }
