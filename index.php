@@ -25,8 +25,7 @@ class dimension extends Action
 
     function index($m, $f)
     {
-        $this->_dot = \PMVC\plug('dotenv');
-        $this->_underscore = \PMVC\plug('underscore');
+        $this->init();
         $configs = $this->_dot->getUnderscoreToArray('.env.dimension');
         $this->_folder = \PMVC\lastSlash(\PMVC\getOption('DIMENSION_FOLDER'));
         if (!\PMVC\realpath($this->_folder)) {
@@ -37,7 +36,10 @@ class dimension extends Action
 
         foreach($configs['DIMENSIONS'] as $dimension)
         {
-            $dimensionConfigs = $this->processInputForOneDimension($f, $dimension);
+            $dimensionConfigs = $this->processInputForOneDimension(
+                $this->getFlattenInput($f, $dimension),
+                $dimension
+            );
             $allConfigs = array_replace_recursive(
                 $allConfigs, 
                 $dimensionConfigs
@@ -50,6 +52,12 @@ class dimension extends Action
         $go = $m['dump'];
         $go->set($allConfigs);
         return $go;
+    }
+
+    function init()
+    {
+        $this->_dot = \PMVC\plug('dotenv');
+        $this->_underscore = \PMVC\plug('underscore');
     }
 
     function processConstantArray(&$arr)
@@ -67,31 +75,41 @@ class dimension extends Action
         }
     }
 
-    function processInputForOneDimension($f, $dimension)
+    function processInputForOneDimension(array $flattenInputs, $dimension)
+    {
+        if (empty($flattenInputs)) {
+            return [];
+        }
+        if (\PMVC\isdev(DEBUG_KEY)) {
+            foreach ($flattenInputs as $i) {
+                $this->_inputs[$i] = $dimension;
+            }
+        }
+        if (count($flattenInputs)>1) {
+            return $this->getMultiInputConfigs($flattenInputs, $dimension);
+        } else {
+            $flattenInputs = reset($flattenInputs);
+            return $this->getOneInputConfigs($flattenInputs, $dimension);
+        }
+    }
+
+    function getFlattenInput($f, $dimension)
     {
         $keys = explode('_',$dimension);
         $inputs = [];
         foreach ($keys as $key) {
-            $inputs[]=strtolower(\PMVC\value($f, [$key]));
-        }
-        $all_input = $this->flatten($inputs);
-        if (empty($all_input)) {
-            return [];
-        }
-        if (\PMVC\isdev(DEBUG_KEY)) {
-            foreach($all_input as $i) {
-                $this->_inputs[$i] = $dimension;
+            $val = \PMVC\value($f, [$key]);
+            if (is_array($val)) {
+                $inputs[] = array_map('strtolower', $val);
+            } else {
+                $inputs[] = strtolower($val);
             }
         }
-        if (count($all_input)>1) {
-            return $this->getMultiInputConfigs($all_input, $dimension);
-        } else {
-            $all_input = reset($all_input);
-            return $this->getOneInputConfigs($all_input, $dimension);
-        }
+        $all_input = $this->flatten($inputs);
+        return $all_input;
     }
 
-    function flatten($array, $prefix='')
+    function flatten(array $array)
     {
         $lines = [];
         foreach($array as $v) {
