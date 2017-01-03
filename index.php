@@ -3,6 +3,7 @@ namespace PMVC\App\dimension;
 
 use PMVC;
 use PMVC\Action;
+use PMVC\PlugIn\dotenv;
 
 $b = new \PMVC\MappingBuilder();
 $b->addAction('index');
@@ -20,7 +21,6 @@ class dimension extends Action
     private $_dot;
     private $_folder;
     private $_underscore;
-    private $_escape;
     private $_inputs = [];
 
     function index($m, $f)
@@ -31,7 +31,7 @@ class dimension extends Action
         if (!\PMVC\realpath($this->_folder)) {
             return !trigger_error('Dimensions settings folder not exists. ['.$this->_folder.']');
         }
-        $this->_escape = \PMVC\value($configs,['ESCAPE']);
+        $this->_dot[dotenv\ESCAPE] = \PMVC\value($configs,[dotenv\ESCAPE]);
         $allConfigs = $this->getConfigs('.dimension.base');
 
         foreach($configs['DIMENSIONS'] as $dimension)
@@ -47,7 +47,8 @@ class dimension extends Action
         }
         \PMVC\dev(function(){return $this->_inputs;}, DEBUG_KEY);
         if (isset($allConfigs['_'])) {
-            $this->processConstantArray($allConfigs);
+            $this->_dot
+                 ->processConstantArray($allConfigs);
         }
         $go = $m['dump'];
         $go->set($allConfigs);
@@ -58,21 +59,6 @@ class dimension extends Action
     {
         $this->_dot = \PMVC\plug('dotenv');
         $this->_underscore = \PMVC\plug('underscore');
-    }
-
-    function processConstantArray(&$arr)
-    {
-        $_ = \PMVC\plug('underscore')
-            ->array()
-            ->toUnderscore($arr['_']);
-        unset($arr['_']);
-        foreach ($_ as $k=>$v) {
-            $k = substr($k,1);
-            if (defined($k)) {
-                $k = constant($k);
-            }
-            $arr[$k] = $v;
-        }
     }
 
     function processInputForOneDimension(array $flattenInputs, $dimension)
@@ -220,7 +206,7 @@ class dimension extends Action
         $allConfigs = [];
         foreach($allFile as $file)
         {
-            $arr = $this->_dot->getArray($file);
+            $arr = $this->_dot->getUnderscoreToArray($file);
             if (!is_array($arr)) {
                 trigger_error(
                     '[\PMVC\App\dimension\getConfigs] '.
@@ -228,10 +214,8 @@ class dimension extends Action
                 );
                 return [];
             }
-            $arr = $this->_underscore
-                ->underscore()
-                ->toArray($arr, $this->_escape);
 
+            // <!-- check if key conflict
             $keys = $this->_underscore
                 ->array()
                 ->toUnderscore($arr);
@@ -246,6 +230,8 @@ class dimension extends Action
                     );
                 }
             }
+            // -->
+
             $allConfigs = array_replace(   
                 $allConfigs,   
                 $arr
