@@ -47,7 +47,7 @@ class dimension extends Action
         }
         \PMVC\dev(function(){return $this->_inputs;}, DEBUG_KEY);
         if (isset($allConfigs['_'])) {
-            $this->_dot
+            $allConfigs = $this->_dot
                  ->processConstantArray($allConfigs);
         }
         $go = $m['dump'];
