@@ -50,6 +50,10 @@ class dimension extends Action
             $allConfigs = $this->_dot
                  ->processConstantArray($allConfigs);
         }
+        $callback = \PMVC\getOption('dimensionCallback');
+        if (is_callable($callback)) {
+            call_user_func($callback, $allConfigs);
+        }
         $go = $m['dump'];
         $go->set($allConfigs);
         return $go;
