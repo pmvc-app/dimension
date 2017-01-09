@@ -52,7 +52,7 @@ class dimension extends Action
         }
         $callback = \PMVC\getOption('dimensionCallback');
         if (is_callable($callback)) {
-            call_user_func($callback, $allConfigs);
+            call_user_func_array($callback, [&$allConfigs]);
         }
         $go = $m['dump'];
         $go->set($allConfigs);

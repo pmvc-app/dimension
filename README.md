@@ -27,6 +27,13 @@ base=xxx
 ```
    * Important: only could extend same level config
 
+## Last cook callback
+```
+\PMVC\option('set', 'dimensionCallback', function(){
+
+});
+```
+
 
 ## Install with Composer
 ### 1. Download composer
