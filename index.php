@@ -236,7 +236,7 @@ class dimension extends Action
             }
             // -->
 
-            $allConfigs = array_replace(   
+            $allConfigs = array_replace_recursive(
                 $allConfigs,   
                 $arr
             );
