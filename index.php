@@ -40,6 +40,13 @@ class dimension extends Action
                 $this->getFlattenInput($f, $dimension),
                 $dimension
             );
+            \PMVC\dev(function() use ($allConfigs, $dimensionConfigs, $dimension) {
+                return [
+                    'before'=> $allConfigs,
+                    'merge' => $dimensionConfigs,
+                    'with'  => $dimension
+                ];
+            }, DEBUG_KEY.'-level');
             $allConfigs = array_replace_recursive(
                 $allConfigs, 
                 $dimensionConfigs
@@ -142,7 +149,7 @@ class dimension extends Action
         {
             $arr = $this->getOneInputConfigs($input, $dimension);
 
-            /*<!-- Verify Conflict*/
+            // <!-- Verify Conflict
             $keys = $this->_underscore
                 ->array()
                 ->toUnderscore($arr);
@@ -169,7 +176,7 @@ class dimension extends Action
                     ' Between ['.$allKeyMap[$found].'] and ['.$input.']'
                 );
             }
-            /*-->*/
+            // -->
 
             $allConfigs = array_replace_recursive(   
                 $allConfigs,   
@@ -235,6 +242,14 @@ class dimension extends Action
                 }
             }
             // -->
+
+            \PMVC\dev(function() use ($allConfigs, $arr, $file) {
+                return [
+                    'before'=> $allConfigs,
+                    'merge' => $arr,
+                    'with'  => $file
+                ];
+            }, DEBUG_KEY.'-file');
 
             $allConfigs = array_replace_recursive(
                 $allConfigs,   
