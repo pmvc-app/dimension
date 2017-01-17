@@ -34,6 +34,16 @@ base=xxx
 });
 ```
 
+## Debug info
+* ?--trace=xxx
+* dimension
+   * level information
+* dimension-level
+   * level merge information
+* dimension-file
+   * different file source merge information 
+
+
 
 ## Install with Composer
 ### 1. Download composer
