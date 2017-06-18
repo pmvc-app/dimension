@@ -10,7 +10,7 @@ PMVC\addPlugInFolders(['../']);
 /*Fake View*/
 PMVC\initPlugIn(['controller'=>null]);
 PMVC\l(__DIR__.'/vendor/pmvc-plugin/controller/tests/resources/FakeView.php');
-PMVC\option('set', 'DIMENSION_FOLDER', './tests/resources');
+PMVC\option('set', 'dimensionFolder', './tests/resources');
 
 class DimensionActionTest extends PHPUnit_Framework_TestCase
 {

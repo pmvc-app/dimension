@@ -27,7 +27,7 @@ class dimension extends Action
     {
         $this->init();
         $configs = $this->_dot->getUnderscoreToArray('.env.dimension');
-        $this->_folder = \PMVC\lastSlash(\PMVC\value($configs, ['FOLDER']));
+        $this->_folder = \PMVC\lastSlash(\PMVC\getOption('dimensionFolder'));
         if (!\PMVC\realpath($this->_folder)) {
             return !trigger_error('Dimensions settings folder not exists. ['.$this->_folder.']');
         }
