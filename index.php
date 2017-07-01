@@ -4,8 +4,9 @@ namespace PMVC\App\dimension;
 use PMVC;
 use PMVC\Action;
 use PMVC\PlugIn\dotenv;
+use PMVC\MappingBuilder;
 
-$b = new \PMVC\MappingBuilder();
+$b = new MappingBuilder();
 $b->addAction('index');
 $b->addForward('dump',[_TYPE=>'view']);
 
@@ -26,15 +27,30 @@ class dimension extends Action
     function index($m, $f)
     {
         $this->init();
-        $configs = $this->_dot->getUnderscoreToArray('.env.dimension');
+        $options = $this->_dot->getUnderscoreToArray(
+            \PMVC\get(
+                $this,
+                'options',
+                '.env.dimension'
+            )
+        );
+        $resetBuckets = \PMVC\value(
+            $options,
+            explode('_', $f['UTM'])
+        );
         $this->_folder = \PMVC\lastSlash(\PMVC\getOption('dimensionFolder'));
         if (!\PMVC\realpath($this->_folder)) {
             return !trigger_error('Dimensions settings folder not exists. ['.$this->_folder.']');
         }
-        $this->_dot[dotenv\ESCAPE] = \PMVC\value($configs,[dotenv\ESCAPE]);
+        $this->_dot[dotenv\ESCAPE] = \PMVC\get($options, dotenv\ESCAPE);
         $allConfigs = $this->getConfigs('.dimension.base');
 
-        foreach($configs['DIMENSIONS'] as $dimension)
+        if (!empty($resetBuckets)) { //put after $allConfigs
+            $f['BUCKETS'] = explode(',', $resetBuckets);
+            $allConfigs['resetBuckets'] = $resetBuckets;
+        }
+
+        foreach($options['DIMENSIONS'] as $dimension)
         {
             $dimensionConfigs = $this->processInputForOneDimension(
                 $this->getFlattenInput($f, $dimension),
