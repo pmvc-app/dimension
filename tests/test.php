@@ -102,6 +102,10 @@ class DimensionActionTest extends PHPUnit_Framework_TestCase
         $c->setApp('dimension');
         $c->plugApp(['../']);
         $r = $c->getRequest();
+        $r['UTM'] = 'foo_bar';
+        $result = $c->process();
+        $actual = \PMVC\value($result,[0,'v','resetBuckets']);
+        $this->assertEquals('a1', $actual);
     }
 }
 
