@@ -50,7 +50,10 @@ class dimension extends Action
         foreach($options['DIMENSIONS'] as $dimension)
         {
             $dimensionConfigs = $this->processInputForOneDimension(
-                $this->getFlattenInput($f, $dimension),
+                $this->flatten()->FlattenInput(
+                    $f,
+                    $dimension
+                ),
                 $dimension
             );
             \PMVC\dev(function() use ($allConfigs, $dimensionConfigs, $dimension) {
@@ -77,56 +80,6 @@ class dimension extends Action
         $go = $m['dump'];
         $go->set($allConfigs);
         return $go;
-    }
-
-    function getFlattenInput($f, $dimension)
-    {
-        $keys = explode('_',$dimension);
-        $inputs = [];
-        foreach ($keys as $key) {
-            $val = \PMVC\value($f, [$key]);
-            if (is_array($val)) {
-                $inputs[] = array_map('strtolower', $val);
-            } else {
-                $inputs[] = strtolower($val);
-            }
-        }
-        $all_input = $this->flatten($inputs);
-        return $all_input;
-    }
-
-    function flatten(array $array)
-    {
-        $lines = [];
-        foreach($array as $v) {
-            if (empty($v)) {
-                continue;
-            }
-            $new = [];
-            if (is_array($v)) {
-                if (empty($lines)) {
-                    foreach ($v as $v1) {
-                        $new[$v1] = null;
-                    }
-                } else {
-                    foreach ($lines as $lk=>$lv) {
-                        foreach ($v as $v1) {
-                            $new[$lk.'_'.$v1] = null;
-                        }
-                    }
-                }
-            } else {
-                if (empty($lines)) {
-                    $new[$v] = null;
-                } else {
-                    foreach ($lines as $lk=>$lv) {
-                        $new[$lk.'_'.$v] = null;
-                    }
-                }
-            }
-            $lines = $new;
-        }
-        return array_keys($lines);
     }
 
     function processInputForOneDimension(array $flattenInputs, $dimension)

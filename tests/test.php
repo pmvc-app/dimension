@@ -72,7 +72,7 @@ class DimensionActionTest extends PHPUnit_Framework_TestCase
             'foo_a_bar',
             'foo_b_bar'
         ];
-        $actual = $run->flatten($arr);
+        $actual = $run->flatten()->flattenArray($arr);
         $this->assertEquals($expected, $actual);
     }
 
@@ -89,7 +89,9 @@ class DimensionActionTest extends PHPUnit_Framework_TestCase
             'bar'=>'bar'
         ];
         $dim = 'foo_xxx_bar';
-        $actual = $run->getFlattenInput($f,$dim);
+        $actual = $run->
+            flatten()->
+            flattenInput($f,$dim);
         $expected = [
             'foo_a_bar',
             'foo_b_bar'
