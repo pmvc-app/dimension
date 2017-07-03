@@ -20,13 +20,11 @@ const DEBUG_KEY = 'dimension';
 class dimension extends Action
 {
     private $_dot;
-    private $_folder;
-    private $_underscore;
     private $_inputs = [];
 
     function index($m, $f)
     {
-        $this->init();
+        $this->_dot = \PMVC\plug('dotenv');
         $options = $this->_dot->getUnderscoreToArray(
             \PMVC\get(
                 $this,
@@ -34,21 +32,20 @@ class dimension extends Action
                 '.env.dimension'
             )
         );
+        $this->_dot[dotenv\ESCAPE] = \PMVC\get($options, dotenv\ESCAPE);
+        $allConfigs = $this->store()->getConfigs('.dimension.base');
+
+        // <!-- Reset Buckets
+        // Put after $allConfigs
         $resetBuckets = \PMVC\value(
             $options,
             explode('_', $f['UTM'])
         );
-        $this->_folder = \PMVC\lastSlash(\PMVC\getOption('dimensionFolder'));
-        if (!\PMVC\realpath($this->_folder)) {
-            return !trigger_error('Dimensions settings folder not exists. ['.$this->_folder.']');
-        }
-        $this->_dot[dotenv\ESCAPE] = \PMVC\get($options, dotenv\ESCAPE);
-        $allConfigs = $this->getConfigs('.dimension.base');
-
-        if (!empty($resetBuckets)) { //put after $allConfigs
+        if (!empty($resetBuckets)) { 
             $f['BUCKETS'] = explode(',', $resetBuckets);
             $allConfigs['resetBuckets'] = $resetBuckets;
         }
+        // Reset Buckets -->
 
         foreach($options['DIMENSIONS'] as $dimension)
         {
@@ -80,30 +77,6 @@ class dimension extends Action
         $go = $m['dump'];
         $go->set($allConfigs);
         return $go;
-    }
-
-    function init()
-    {
-        $this->_dot = \PMVC\plug('dotenv');
-        $this->_underscore = \PMVC\plug('underscore');
-    }
-
-    function processInputForOneDimension(array $flattenInputs, $dimension)
-    {
-        if (empty($flattenInputs)) {
-            return [];
-        }
-        if (\PMVC\isdev(DEBUG_KEY)) {
-            foreach ($flattenInputs as $i) {
-                $this->_inputs[$i] = $dimension;
-            }
-        }
-        if (count($flattenInputs)>1) {
-            return $this->getMultiInputConfigs($flattenInputs, $dimension);
-        } else {
-            $flattenInputs = reset($flattenInputs);
-            return $this->getOneInputConfigs($flattenInputs, $dimension);
-        }
     }
 
     function getFlattenInput($f, $dimension)
@@ -156,122 +129,23 @@ class dimension extends Action
         return array_keys($lines);
     }
 
-    function getMultiInputConfigs($inputs, $dimension)
+    function processInputForOneDimension(array $flattenInputs, $dimension)
     {
-        $allKeys = [];
-        $allKeyMap = [];
-        $allConfigs = [];
-        foreach($inputs as $input)
-        {
-            $arr = $this->getOneInputConfigs($input, $dimension);
-
-            // <!-- Verify Conflict
-            $keys = $this->_underscore
-                ->array()
-                ->toUnderscore($arr);
-            $keys = array_keys($keys);
-            $found = false;
-            foreach($keys as $key)
-            {
-                if (isset($allKeyMap[$key])) {
-                    $found = $key;
-                } else {
-                    foreach ($allKeys as $aV) {
-                       if (0===strpos($aV,$key) || 0===strpos($key,$aV)) {
-                            $found=$aV;
-                            break;
-                       }
-                    }
-                    if (!$found) {
-                        $allKeys[] = $key;
-                        $allKeyMap[$key] = $input;
-                        continue;
-                    }
-                }
-                trigger_error('Conflict for '.$dimension.' key: ['.$found.'].'.
-                    ' Between ['.$allKeyMap[$found].'] and ['.$input.']'
-                );
+        if (empty($flattenInputs)) {
+            return [];
+        }
+        if (\PMVC\isdev(DEBUG_KEY)) {
+            foreach ($flattenInputs as $i) {
+                $this->_inputs[$i] = $dimension;
             }
-            // -->
-
-            $allConfigs = array_replace_recursive(   
-                $allConfigs,   
-                $arr
-            );
         }
-        return $allConfigs;
+        $store = $this->store();
+        if (count($flattenInputs)>1) {
+            return $store->getMultiInputConfigs($flattenInputs, $dimension);
+        } else {
+            $flattenInputs = reset($flattenInputs);
+            return $store->getOneInputConfigs($flattenInputs, $dimension);
+        }
     }
 
-    function getOneInputConfigs($input, $dimension)
-    {
-        $file = $this->getOneInputFile($input, $dimension);
-        $configs =  $this->getConfigs($file);
-        if (!empty($configs['base'])) {
-            $baseFile = $this->getOneInputFile($configs['base'], $dimension);
-            $baseConfigs =  $this->getConfigs($baseFile);
-            $configs = array_replace_recursive(   
-                $baseConfigs,   
-                $configs
-            );
-        }
-        return $configs;
-    }
-
-    function getOneInputFile($input, $dimension)
-    {
-        return '.dimension.'.$dimension.'.'.$input;
-    }
-
-    function getConfigs($file)
-    {
-        $path = $this->_folder.$file;
-        $allFile = glob($path.'.*');
-        if (\PMVC\realPath($path)) {
-            $allFile[]=$path;
-        }
-        $allKeys = [];
-        $allConfigs = [];
-        foreach($allFile as $file)
-        {
-            $arr = $this->_dot->getUnderscoreToArray($file);
-            if (!is_array($arr)) {
-                trigger_error(
-                    '[\PMVC\App\dimension\getConfigs] '.
-                    'Parse dimension setting fail. ['.$file.']'
-                );
-                return [];
-            }
-
-            // <!-- check if key conflict
-            $keys = $this->_underscore
-                ->array()
-                ->toUnderscore($arr);
-            $keys = array_keys($keys);
-            foreach($keys as $key)
-            {
-                if (!isset($allKeys[$key])) {
-                    $allKeys[$key] = $file;
-                } else {
-                    trigger_error('Conflict for key: ['.$key.'].'.
-                        ' Between ['.$allKeys[$key].'] and ['.$file.']'
-                    );
-                }
-            }
-            // -->
-
-            \PMVC\dev(function() use ($allConfigs, $arr, $file) {
-                return [
-                    'before'=> $allConfigs,
-                    'merge' => $arr,
-                    'with'  => $file
-                ];
-            }, DEBUG_KEY.'-file');
-
-            $allConfigs = array_replace_recursive(
-                $allConfigs,   
-                $arr
-            );
-        }
-        return $allConfigs;
-    }
 }

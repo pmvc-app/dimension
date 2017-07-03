@@ -17,6 +17,7 @@ class DimensionActionTest extends PHPUnit_Framework_TestCase
                 _CLASS => '\PMVC\FakeView',
             ]
         );
+        \PMVC\option('set', 'dimensionFolder', __DIR__.'/resources');
     }
 
     function testProcessAction()
@@ -96,6 +97,18 @@ class DimensionActionTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $actual);
     }
 
+    /**
+     * @expectedException DomainException
+     */
+    function testDimensionFolderNotFound()
+    {
+        \PMVC\option('set', 'dimensionFolder', 'xxx');
+        $c = \PMVC\plug('controller');
+        $c->setApp('dimension');
+        $c->plugApp(['../']);
+        $result = $c->process();
+    }
+
     function testUTMResetBucket()
     {
         $c = \PMVC\plug('controller');
@@ -107,6 +120,7 @@ class DimensionActionTest extends PHPUnit_Framework_TestCase
         $actual = \PMVC\value($result,[0,'v','resetBuckets']);
         $this->assertEquals('a1', $actual);
     }
+
 }
 
 
