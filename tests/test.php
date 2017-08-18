@@ -4,7 +4,8 @@ namespace PMVC\App\dimension;
 
 use PHPUnit_Framework_TestCase;
 
-class DimensionActionTest extends PHPUnit_Framework_TestCase
+class DimensionActionTest
+    extends PHPUnit_Framework_TestCase
 {
     function setup()
     {

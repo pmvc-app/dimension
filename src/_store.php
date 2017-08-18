@@ -16,9 +16,10 @@ class Store
     {
         $this->_dot = \PMVC\plug('dotenv');
         $this->_underscore = \PMVC\plug('underscore');
-        $this->_folder = \PMVC\lastSlash(\PMVC\getOption('dimensionFolder'));
-        if (!\PMVC\realpath($this->_folder)) {
-            throw new DomainException('Dimensions settings folder not exists. ['.$this->_folder.']');
+        $folder = \PMVC\getOption('dimensionFolder');
+        $this->_folder = \PMVC\realPath($folder);
+        if (!$this->_folder) {
+            throw new DomainException('Dimensions settings folder not exists. ['.$folder.']');
         }
     }
 
@@ -99,7 +100,7 @@ class Store
 
     private function _getConfigs($file)
     {
-        $path = $this->_folder.$file;
+        $path = $this->_folder.'/'.$file;
         $allFile = glob($path.'.*');
         if (\PMVC\realPath($path)) {
             $allFile[]=$path;
