@@ -107,13 +107,22 @@ class Store
         }
         $allKeys = [];
         $allConfigs = [];
+        $encryptor = \PMVC\plug('simple_encryptor');
         foreach($allFile as $file)
         {
+            if (fnmatch('*.pw.plaintext', $file)) {
+                continue;
+            } elseif (fnmatch('*.pw', $file)) {
+                $file = (object)[
+                    'path'=>$file
+                ];
+                $file->raw = $encryptor->decode(file_get_contents($file->path));
+            }
             $arr = $this->_dot->getUnderscoreToArray($file);
             if (!is_array($arr)) {
                 trigger_error(
                     '[\PMVC\App\dimension\getConfigs] '.
-                    'Parse dimension setting fail. ['.$file.']'
+                    'Parse dimension setting fail. ['.print_r($file,true).']'
                 );
                 return [];
             }
