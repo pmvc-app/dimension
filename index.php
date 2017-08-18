@@ -33,7 +33,7 @@ class dimension extends Action
             )
         );
         $this->_dot[dotenv\ESCAPE] = \PMVC\get($options, dotenv\ESCAPE);
-        $allConfigs = $this->store()->getConfigs('.dimension.base');
+        $allConfigs = $this->store()->getOneInputConfigs('base');
 
         // <!-- Reset Buckets
         // Put after $allConfigs
@@ -50,11 +50,11 @@ class dimension extends Action
         foreach($options['DIMENSIONS'] as $dimension)
         {
             $dimensionConfigs = $this->processInputForOneDimension(
+                $dimension,
                 $this->flatten()->FlattenInput(
                     $f,
                     $dimension
-                ),
-                $dimension
+                )
             );
             \PMVC\dev(function() use ($allConfigs, $dimensionConfigs, $dimension) {
                 return [
@@ -82,7 +82,7 @@ class dimension extends Action
         return $go;
     }
 
-    function processInputForOneDimension(array $flattenInputs, $dimension)
+    function processInputForOneDimension($dimension, array $flattenInputs)
     {
         if (empty($flattenInputs)) {
             return [];
@@ -94,10 +94,10 @@ class dimension extends Action
         }
         $store = $this->store();
         if (count($flattenInputs)>1) {
-            return $store->getMultiInputConfigs($flattenInputs, $dimension);
+            return $store->getMultiInputConfigs($dimension, $flattenInputs);
         } else {
-            $flattenInputs = reset($flattenInputs);
-            return $store->getOneInputConfigs($flattenInputs, $dimension);
+            $flattenInput = reset($flattenInputs);
+            return $store->getOneInputConfigs($dimension, $flattenInput);
         }
     }
 

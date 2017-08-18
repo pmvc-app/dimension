@@ -27,14 +27,14 @@ class Store
         return $this;
     }
 
-    function getMultiInputConfigs($inputs, $dimension)
+    public function getMultiInputConfigs($dimension, array $inputs)
     {
         $allKeys = [];
         $allKeyMap = [];
         $allConfigs = [];
         foreach($inputs as $input)
         {
-            $arr = $this->getOneInputConfigs($input, $dimension);
+            $arr = $this->getOneInputConfigs($dimension, $input);
 
             // <!-- Verify Conflict
             $keys = $this->_underscore
@@ -73,13 +73,13 @@ class Store
         return $allConfigs;
     }
 
-    function getOneInputConfigs($input, $dimension)
+    public function getOneInputConfigs( $dimension, $input=null )
     {
-        $file = $this->getOneInputFile($input, $dimension);
-        $configs =  $this->getConfigs($file);
+        $file = $this->_getOneInputFile($dimension, $input);
+        $configs =  $this->_getConfigs($file);
         if (!empty($configs['base'])) {
-            $baseFile = $this->getOneInputFile($configs['base'], $dimension);
-            $baseConfigs =  $this->getConfigs($baseFile);
+            $baseFile = $this->_getOneInputFile($dimension, $configs['base']);
+            $baseConfigs =  $this->_getConfigs($baseFile);
             $configs = array_replace_recursive(   
                 $baseConfigs,   
                 $configs
@@ -88,12 +88,16 @@ class Store
         return $configs;
     }
 
-    function getOneInputFile($input, $dimension)
+    private function _getOneInputFile($dimension, $input=null)
     {
-        return '.dimension.'.$dimension.'.'.$input;
+        $file = '.dimension.'.$dimension;
+        if (!is_null($input)) {
+            $file .='.'.$input;
+        }
+        return $file;
     }
 
-    function getConfigs($file)
+    private function _getConfigs($file)
     {
         $path = $this->_folder.$file;
         $allFile = glob($path.'.*');

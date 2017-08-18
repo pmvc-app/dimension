@@ -33,16 +33,31 @@ class DimensionActionTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $actual);
     }
 
+    function testExtendsBase()
+    {
+        $c = \PMVC\plug('controller');
+        $c->setApp('dimension');
+        $c->plugApp(['../']);
+        $app = \PMVC\plug(_RUN_APP);
+        $store = $app->store(); 
+        $actual = $store->getOneInputConfigs('another', 'v2');
+        $expected = [
+            'bar'=>'foo',
+            'base'=>'v1',
+            'foo'=>'bar'
+        ];
+        $this->assertEquals($expected, $actual);
+    }
+
     function testDebug()
     {
         $c = \PMVC\plug('controller');
         $c->setApp('dimension');
         $c->plugApp(['../']);
-        \PMVC\plug('dev');
         \PMVC\plug('debug',[
-            'level'=>'dimension',
             'output'=>'debug_store'
-        ]);
+        ])->setLevel('dimension', true);
+        \PMVC\plug('dev')->onResetDebugLevel();
         $r = $c->getRequest();
         $r['test'] = 'fakeDimension';
         $result = $c->process();
