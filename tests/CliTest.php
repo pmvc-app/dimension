@@ -23,17 +23,20 @@ class DimensionCliActionText
 
     public function testEncode()
     {
+        $key = 'fakeKey';
         $c = \PMVC\plug('controller');
         $c->setApp('dimension');
         $c->setAppAction('encode');
         $c->plugApp(['../'], [], 'index_cli');
         $r = $c->getRequest();
-        $r['key'] = 'fakeKey';
+        $r['key'] = $key;
         $result = $c->process();
         $file=$c['dimensionFolder'].'/.dimension.encode.pw';
-        $actual = file_get_contents($file);
-        $expected = '4CYRwF3LTFSNhKs9lhwaUQ==';
-        $this->assertEquals($expected, $actual);
+        $encode = file_get_contents($file);
+        $encryptor = \PMVC\plug('simple_encryptor', ['key'=>$key]); 
+        $decode = $encryptor->decode($encode);
+        $expected = 'PW_123=456'.PHP_EOL.PHP_EOL;
+        $this->assertEquals($expected, $decode);
     }
 
     public function testDecode()

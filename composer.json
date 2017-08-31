@@ -17,6 +17,7 @@
     "require": {
         "pmvc-plugin/controller": "*",
         "pmvc-plugin/dotenv": "*",
+        "pmvc-plugin/dimension": "*",
         "pmvc-plugin/simple_encryptor": "*"
     },
     "minimum-stability": "dev"

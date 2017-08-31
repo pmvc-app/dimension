@@ -3,4 +3,5 @@ composer.lock
 .php_cs.cache
 .*.sw?
 tests/resources/.dimension.decode.pw.plaintext
+tests/resources/.dimension.decode.pw
 tests/resources/.dimension.encode.pw
