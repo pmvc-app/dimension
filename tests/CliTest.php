@@ -18,11 +18,11 @@ class DimensionCliActionText
                 _CLASS => '\PMVC\FakeView',
             ]
         );
-        \PMVC\option('set', 'dimensionFolder', __DIR__.'/resources');
     }
 
     public function testEncode()
     {
+        \PMVC\option('set', 'dimensionFolder', __DIR__.'/resources/encode');
         $key = 'fakeKey';
         $c = \PMVC\plug('controller');
         $c->setApp('dimension');
@@ -41,6 +41,7 @@ class DimensionCliActionText
 
     public function testDecode()
     {
+        \PMVC\option('set', 'dimensionFolder', __DIR__.'/resources/decode');
         $c = \PMVC\plug('controller');
         $c->setApp('dimension');
         $c->setAppAction('decode');

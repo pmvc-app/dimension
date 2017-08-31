@@ -2,6 +2,5 @@ vendor
 composer.lock
 .php_cs.cache
 .*.sw?
-tests/resources/.dimension.decode.pw.plaintext
-tests/resources/.dimension.decode.pw
-tests/resources/.dimension.encode.pw
+tests/resources/decode/.dimension.decode.pw.plaintext
+tests/resources/encode/.dimension.encode.pw
