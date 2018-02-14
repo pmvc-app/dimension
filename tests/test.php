@@ -39,6 +39,7 @@ class DimensionActionTest
         $c = \PMVC\plug('controller');
         $c->setApp('dimension');
         $c->plugApp(['../']);
+        $result = $c->process();
         $app = \PMVC\plug(_RUN_APP);
         $store = $app->store(); 
         $actual = $store->getOneInputConfigs('another', 'v2');

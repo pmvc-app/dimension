@@ -91,7 +91,7 @@ class Store
 
     private function _getOneInputFile($dimension, $input=null)
     {
-        $file = '.dimension.'.$dimension;
+        $file = \PMVC\get($this->caller, PREFIX).$dimension;
         if (!is_null($input)) {
             $file .='.'.$input;
         }

@@ -17,6 +17,7 @@ ${_INIT_CONFIG}[_INIT_BUILDER] = $b;
 \PMVC\unplug('view_config_helper');
 
 const DEBUG_KEY = 'dimension';
+const PREFIX = 'prefix';
 
 class dimension extends Action
 {
@@ -34,6 +35,7 @@ class dimension extends Action
             )
         );
         $this->_dot[dotenv\ESCAPE] = \PMVC\get($options, dotenv\ESCAPE);
+        $this[PREFIX] = \PMVC\get($options, PREFIX);
         $allConfigs = $this->store()->getOneInputConfigs('base');
 
         // <!-- Reset Buckets
