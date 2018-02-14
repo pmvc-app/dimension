@@ -5,7 +5,6 @@
 [![Total Downloads](https://poser.pugx.org/pmvc-app/dimension/downloads)](https://packagist.org/packages/pmvc-app/dimension) 
 
 # PMVC multi-dimensional configuration library 
-===
 
 ## Config format use .env
    * https://github.com/pmvc-plugin/dotenv
@@ -43,7 +42,16 @@ base=xxx
 * dimension-file
    * different file source merge information 
 
+## Other Resource
+   * Deployment environment
+      * https://en.wikipedia.org/wiki/Deployment_environment
 
+## Auto load app or plugin config
+   * APP
+      * https://github.com/pmvc-plugin/controller/blob/master/controller.php#L140-L154
+   * Plug-in
+      * https://github.com/pmvc/pmvc/blob/master/src/util_plug.php#L979-L991
+      
 
 ## Install with Composer
 ### 1. Download composer
@@ -65,6 +73,4 @@ base=xxx
 #### 2.2 Or use composer command-line
    * php composer.phar require pmvc-app/dimension
 
-## Other Resource
-   * Deployment environment
-      * https://en.wikipedia.org/wiki/Deployment_environment
+
