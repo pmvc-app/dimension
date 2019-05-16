@@ -24,7 +24,7 @@
 ```
 base=xxx
 ```
-   * Important: only could extend same level config
+   * Important: only allow extend with same level configs
 
 ## Last cook callback
 ```
