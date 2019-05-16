@@ -16,7 +16,7 @@
    * https://github.com/pmvc-app/dimension/blob/master/index.php#L55-L68
 
 ## How to escape
-   * Prefix with escap character such as '\'.
+   * Prefix with escap character such as '\\'.
    * If detected key start with escap character will bypass underscore process
 
 ## How to extend another config file
