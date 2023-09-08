@@ -36,7 +36,10 @@ class dimension extends Action
 
         // <!-- Reset Buckets
         // Put after $allConfigs
-        $resetBuckets = \PMVC\value($options, explode('_', $f['UTM'] ?? ''));
+        $resetBuckets = \PMVC\value(
+            $options,
+            explode('_', empty($f['UTM']) ? '' : $f['UTM'])
+        );
         if (!empty($resetBuckets)) {
             $f['BUCKETS'] = explode(',', $resetBuckets);
             $allConfigs['resetBuckets'] = $resetBuckets;
@@ -46,7 +49,7 @@ class dimension extends Action
         foreach ($options['DIMENSIONS'] as $dimension) {
             $dimensionConfigs = $this->processInputForOneDimension(
                 $dimension,
-                $this->flatten()->flattenInput($f, explode('_',$dimension))
+                $this->flatten()->flattenInput($f, explode('_', $dimension))
             );
             \PMVC\dev(function () use (
                 $allConfigs,
@@ -79,12 +82,14 @@ class dimension extends Action
         return $go;
     }
 
-    private function processInputForOneDimension($dimension, array $flattenInputs)
-    {
+    private function processInputForOneDimension(
+        $dimension,
+        array $flattenInputs
+    ) {
         if (empty($flattenInputs)) {
             return [];
         }
-        \PMVC\dev(function () use($flattenInputs, $dimension) {
+        \PMVC\dev(function () use ($flattenInputs, $dimension) {
             foreach ($flattenInputs as $i) {
                 $this->_inputs[$i] = $dimension;
             }
