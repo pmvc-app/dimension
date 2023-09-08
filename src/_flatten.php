@@ -13,9 +13,8 @@ class Flatten
         return $this;
     }
 
-    public function flattenInput($form, $dimension)
+    public function flattenInput($form, array $keys)
     {
-        $keys = explode('_',$dimension);
         $inputs = [];
         foreach ($keys as $key) {
             $val = \PMVC\value($form, [$key], '');

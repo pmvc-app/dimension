@@ -46,7 +46,7 @@ class dimension extends Action
         foreach ($options['DIMENSIONS'] as $dimension) {
             $dimensionConfigs = $this->processInputForOneDimension(
                 $dimension,
-                $this->flatten()->FlattenInput($f, $dimension)
+                $this->flatten()->flattenInput($f, explode('_',$dimension))
             );
             \PMVC\dev(function () use (
                 $allConfigs,
@@ -79,16 +79,16 @@ class dimension extends Action
         return $go;
     }
 
-    function processInputForOneDimension($dimension, array $flattenInputs)
+    private function processInputForOneDimension($dimension, array $flattenInputs)
     {
         if (empty($flattenInputs)) {
             return [];
         }
-        if (\PMVC\isdev(DEBUG_KEY)) {
+        \PMVC\dev(function () use($flattenInputs, $dimension) {
             foreach ($flattenInputs as $i) {
                 $this->_inputs[$i] = $dimension;
             }
-        }
+        }, DEBUG_KEY);
         $store = $this->store();
         if (count($flattenInputs) > 1) {
             return $store->getMultiInputConfigs($dimension, $flattenInputs);

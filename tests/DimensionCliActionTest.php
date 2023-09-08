@@ -18,7 +18,6 @@ class DimensionCliActionTest
                 _CLASS => '\PMVC\FakeView',
             ]
         );
-        \PMVC\plug('dev')->debug_with_cli('debug');
     }
 
     public function testEncode()

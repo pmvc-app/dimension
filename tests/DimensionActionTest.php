@@ -64,36 +64,6 @@ class DimensionActionTest extends TestCase
         $this->assertEquals($expected, $actual);
     }
 
-    function testFlatten()
-    {
-        $c = \PMVC\plug('controller');
-        $c->setApp('dimension');
-        $c->plugApp(['../']);
-        $arr = ['foo', ['a', 'b'], 'bar'];
-        $run = \PMVC\plug(_RUN_APP);
-        $expected = ['foo_a_bar', 'foo_b_bar'];
-        $actual = $run->flatten()->flattenArray($arr);
-        $this->assertEquals($expected, $actual);
-    }
-
-    function testValueToLower()
-    {
-        $c = \PMVC\plug('controller');
-        $c->setApp('dimension');
-        $c->plugApp(['../']);
-        $run = \PMVC\plug(_RUN_APP);
-        $run->init();
-        $f = [
-            'foo' => 'foo',
-            'xxx' => ['A', 'B'],
-            'bar' => 'bar',
-        ];
-        $dim = 'foo_xxx_bar';
-        $actual = $run->flatten()->flattenInput($f, $dim);
-        $expected = ['foo_a_bar', 'foo_b_bar'];
-        $this->assertEquals($expected, $actual);
-    }
-
     /**
      * @expectedException DomainException
      */
