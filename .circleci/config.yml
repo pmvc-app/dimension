@@ -1,0 +1,56 @@
+version: 2.1
+
+jobs:
+  unittest:
+    parameters:
+      php-version:
+        type: string
+      plugin-name:
+        type: string
+        default: "dimension"
+    docker:
+      - image: allfunc/pmvc-phpunit:<< parameters.php-version >>
+    working_directory: /var/www/<< parameters.plugin-name >>
+    steps:
+      - checkout
+      - run:
+          name: "Display information"
+          command: |
+            date
+            php -v
+            php -m
+            composer --version
+            phpunit --version
+      - run:
+          name: Composer install packages
+          command: |
+            composer update
+            composer install --prefer-source
+      - run:
+          name: PHPUnit
+          command: |
+            ENABLE_COVERAGE=false
+            if [ "<< parameters.php-version >>" == "8.2" ]; then
+              if [ "$ENABLE_COVERAGE" == "true" ]; then
+                XDEBUG_MODE=coverage phpunit --coverage-clover clover.xml
+                coveralls --coverage_clover=clover.xml -v -o coveralls-upload.json
+              else
+                phpunit --display-deprecations
+              fi
+            else
+              phpunit
+            fi
+      - store_artifacts:
+          path: /var/www/<< parameters.plugin-name >>/clover.xml
+      - store_artifacts:
+          path: /var/www/<< parameters.plugin-name >>/coveralls-upload.json
+      - store_test_results:
+          path: /tmp/test_output
+
+workflows:
+  run-job:
+    jobs:
+      - unittest:
+          matrix:
+            parameters:
+              php-version: ["8.2", "8.1", "8.0", "5.6"]

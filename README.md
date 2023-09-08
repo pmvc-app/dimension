@@ -1,6 +1,6 @@
 [![Latest Stable Version](https://poser.pugx.org/pmvc-app/dimension/v/stable)](https://packagist.org/packages/pmvc-app/dimension) 
 [![Latest Unstable Version](https://poser.pugx.org/pmvc-app/dimension/v/unstable)](https://packagist.org/packages/pmvc-app/dimension) 
-[![Build Status](https://travis-ci.org/pmvc-app/dimension.svg?branch=master)](https://travis-ci.org/pmvc-app/dimension)
+[![CircleCI](https://circleci.com/gh/pmvc-app/dimension/tree/main.svg?style=svg)](https://circleci.com/gh/pmvc-app/dimension/tree/main)
 [![License](https://poser.pugx.org/pmvc-app/dimension/license)](https://packagist.org/packages/pmvc-app/dimension)
 [![Total Downloads](https://poser.pugx.org/pmvc-app/dimension/downloads)](https://packagist.org/packages/pmvc-app/dimension) 
 

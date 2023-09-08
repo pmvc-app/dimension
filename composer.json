@@ -1,24 +1,25 @@
 {
-    "name": "pmvc-app/dimension",
-    "description": "PMVC multi-dimensional configuration library",
-    "type": "library",
-    "keywords": ["dimension", "pmvc", "plug-in"],
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Hill",
-            "email": "hill@kimo.com"
-        }
-    ],
-    "require-dev": {
-        "pmvc-plugin/dev" : "*",
-        "pmvc-plugin/debug_store" : "*"
-    },
-    "require": {
-        "pmvc-plugin/controller": "*",
-        "pmvc-plugin/dotenv": "*",
-        "pmvc-plugin/dimension": "*",
-        "pmvc-plugin/simple_encryptor": "*"
-    },
-    "minimum-stability": "dev"
+  "name": "pmvc-app/dimension",
+  "description": "PMVC multi-dimensional configuration library",
+  "type": "library",
+  "keywords": ["dimension", "pmvc", "plug-in"],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Hill",
+      "email": "hill@kimo.com"
+    }
+  ],
+  "require-dev": {
+    "pmvc-plugin/dev": "*",
+    "pmvc-plugin/debug_store": "*",
+    "pmvc-plugin/unit": "*"
+  },
+  "require": {
+    "pmvc-plugin/controller": "*",
+    "pmvc-plugin/dotenv": "*",
+    "pmvc-plugin/dimension": "*",
+    "pmvc-plugin/simple_encryptor": "*"
+  },
+  "minimum-stability": "dev"
 }

@@ -8,6 +8,7 @@ ${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\Store';
 
 class Store
 {
+    public $caller;
     private $_folder;
     private $_dot;
     private $_underscore;

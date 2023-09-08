@@ -1,13 +1,19 @@
 <?php
 
-namespace PMVC\PlugIn\url;
-
 const vendorDir = __DIR__.'/../vendor/';
 
 $path = vendorDir.'autoload.php';
 include $path;
 
-\PMVC\Load::plug(['controller'=>null]);
+\PMVC\Load::plug(
+    [
+        'unit' => null,
+        'controller'=>null,
+        'dimension'=>false,
+    ],
+    [__DIR__ . '/../../']
+);
+
 \PMVC\l(vendorDir.'pmvc-plugin/controller/tests/resources/FakeView.php');
 
 $pDot = \PMVC\plug('dotenv');

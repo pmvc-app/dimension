@@ -2,12 +2,12 @@
 
 namespace PMVC\App\dimension;
 
-use PHPUnit_Framework_TestCase;
+use PMVC\TestCase;
 
-class DimensionCliActionText
-    extends PHPUnit_Framework_TestCase
+class DimensionCliActionTest
+    extends TestCase
 {
-    function setup()
+    function pmvc_setup()
     {
         \PMVC\unplug('controller');
         \PMVC\unplug('view');
@@ -18,6 +18,7 @@ class DimensionCliActionText
                 _CLASS => '\PMVC\FakeView',
             ]
         );
+        \PMVC\plug('dev')->debug_with_cli('debug');
     }
 
     public function testEncode()
@@ -25,7 +26,8 @@ class DimensionCliActionText
         \PMVC\option('set', 'dimensionFolder', __DIR__.'/resources/encode');
         $key = 'fakeKey';
         $c = \PMVC\plug('controller');
-        $c->setApp('dimension');
+        $appName = basename(dirname(__DIR__));
+        $c->setApp($appName);
         $c->setAppAction('encode');
         $c->plugApp(['../'], [], 'index_cli');
         $r = $c->getRequest();
@@ -43,7 +45,8 @@ class DimensionCliActionText
     {
         \PMVC\option('set', 'dimensionFolder', __DIR__.'/resources/decode');
         $c = \PMVC\plug('controller');
-        $c->setApp('dimension');
+        $appName = basename(dirname(__DIR__));
+        $c->setApp($appName);
         $c->setAppAction('decode');
         $c->plugApp(['../'], [], 'index_cli');
         $r = $c->getRequest();

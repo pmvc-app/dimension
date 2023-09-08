@@ -9,9 +9,9 @@ use PMVC\MappingBuilder;
 
 $b = new MappingBuilder();
 $b->addAction('index');
-$b->addForward('dump',[_TYPE=>'view']);
+$b->addForward('dump', [_TYPE => 'view']);
 
-${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\dimension';
+${_INIT_CONFIG}[_CLASS] = __NAMESPACE__ . '\dimension';
 ${_INIT_CONFIG}[_INIT_BUILDER] = $b;
 
 \PMVC\unplug('view_config_helper');
@@ -28,11 +28,7 @@ class dimension extends Action
     {
         $this->_dot = \PMVC\plug('dotenv');
         $options = $this->_dot->getUnderscoreToArray(
-            \PMVC\get(
-                $this,
-                'options',
-                '.env.dimension'
-            )
+            \PMVC\get($this, 'options', '.env.dimension')
         );
         $this->_dot[dotenv\ESCAPE] = \PMVC\get($options, dotenv\ESCAPE);
         $this[PREFIX] = \PMVC\get($options, PREFIX);
@@ -40,41 +36,39 @@ class dimension extends Action
 
         // <!-- Reset Buckets
         // Put after $allConfigs
-        $resetBuckets = \PMVC\value(
-            $options,
-            explode('_', $f['UTM'])
-        );
-        if (!empty($resetBuckets)) { 
+        $resetBuckets = \PMVC\value($options, explode('_', $f['UTM'] ?? ''));
+        if (!empty($resetBuckets)) {
             $f['BUCKETS'] = explode(',', $resetBuckets);
             $allConfigs['resetBuckets'] = $resetBuckets;
         }
         // Reset Buckets -->
 
-        foreach($options['DIMENSIONS'] as $dimension)
-        {
+        foreach ($options['DIMENSIONS'] as $dimension) {
             $dimensionConfigs = $this->processInputForOneDimension(
                 $dimension,
-                $this->flatten()->FlattenInput(
-                    $f,
-                    $dimension
-                )
+                $this->flatten()->FlattenInput($f, $dimension)
             );
-            \PMVC\dev(function() use ($allConfigs, $dimensionConfigs, $dimension) {
+            \PMVC\dev(function () use (
+                $allConfigs,
+                $dimensionConfigs,
+                $dimension
+            ) {
                 return [
-                    'before'=> $allConfigs,
+                    'before' => $allConfigs,
                     'merge' => $dimensionConfigs,
-                    'with'  => $dimension
+                    'with' => $dimension,
                 ];
-            }, DEBUG_KEY.'-level');
+            }, DEBUG_KEY . '-level');
             $allConfigs = array_replace_recursive(
-                $allConfigs, 
+                $allConfigs,
                 $dimensionConfigs
             );
         }
-        \PMVC\dev(function(){return $this->_inputs;}, DEBUG_KEY);
+        \PMVC\dev(function () {
+            return $this->_inputs;
+        }, DEBUG_KEY);
         if (isset($allConfigs['_'])) {
-            $allConfigs = $this->_dot
-                 ->processConstantArray($allConfigs);
+            $allConfigs = $this->_dot->processConstantArray($allConfigs);
         }
         $callback = \PMVC\getOption('dimensionCallback');
         if (is_callable($callback)) {
@@ -96,12 +90,11 @@ class dimension extends Action
             }
         }
         $store = $this->store();
-        if (count($flattenInputs)>1) {
+        if (count($flattenInputs) > 1) {
             return $store->getMultiInputConfigs($dimension, $flattenInputs);
         } else {
             $flattenInput = reset($flattenInputs);
             return $store->getOneInputConfigs($dimension, $flattenInput);
         }
     }
-
 }

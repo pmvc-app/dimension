@@ -18,7 +18,7 @@ class Flatten
         $keys = explode('_',$dimension);
         $inputs = [];
         foreach ($keys as $key) {
-            $val = \PMVC\value($form, [$key]);
+            $val = \PMVC\value($form, [$key], '');
             if (is_array($val)) {
                 $inputs[] = array_map('strtolower', $val);
             } else {
